@@ -32,35 +32,56 @@
         }
       }
 
-      navigator.getUserMedia({
-        video: true,
-        audio: true
-      },
-      function(localMediaStream) {
-        let localVideo = document.getElementById('localVideo')
-        localVideo.srcObject = localMediaStream
-        localVideo.onloadedmetadata = function(e) {
-          localVideo.play()
-        }
-
-        let pionSession = new PionSession('signaler.pion.sh', Math.random().toString(36).substring(7), localMediaStream)
-        pionSession.eventHandler = event => {
-          switch (event.type) {
-            case PionEvents.NEW_MEDIA:
-              addRemoteVideo(event.media, event.sessionKey)
-              break
-            case PionEvents.PEER_LEAVE_ROOM:
-              removeRemoteVideo(event.sessionKey)
-              break
-            default:
-              console.warn(event)
+      let pionSession = authToken => {
+        navigator.getUserMedia({
+          video: true,
+          audio: true
+        },
+        function(localMediaStream) {
+          let localVideo = document.getElementById('localVideo')
+          localVideo.srcObject = localMediaStream
+          localVideo.onloadedmetadata = function(e) {
+            localVideo.play()
           }
+
+          let pionSession = new PionSession('signaler.pion.sh', authToken, localMediaStream)
+          pionSession.eventHandler = event => {
+            switch (event.type) {
+              case PionEvents.NEW_MEDIA:
+                addRemoteVideo(event.media, event.sessionKey)
+                break
+              case PionEvents.PEER_LEAVE_ROOM:
+                removeRemoteVideo(event.sessionKey)
+                break
+              default:
+                console.warn(event)
+            }
+          }
+          pionSession.start()
+        },
+        function(err) {
+          console.log('The following error occurred when trying to use getUserMedia: ' + err);
+        })
+      }
+
+      fetch('https://api.pion.sh/authenticate', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        },
+        body: new URLSearchParams('apiKey=seanTest&room=ABC123')
+      }).then(async response => {
+        if (response.status === 200) {
+          pionSession(await response.text())
+        } else {
+          console.error(`Authentication return ${response.status} need 200`)
         }
-        pionSession.start()
-      },
-      function(err) {
-        console.log('The following error occurred when trying to use getUserMedia: ' + err);
+      }).catch(err => {
+        console.error(err)
       })
+
+
     </script>
   </body>
 </html>
