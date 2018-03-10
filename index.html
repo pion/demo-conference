@@ -8,8 +8,9 @@
     </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-6.1.1.js"> </script>
-    <script src="client/index.js"> </script>
-    <script>
+    <script src="client/index.js" type="module"> </script>
+    <script type="module">
+      import {PionSession, PionEvents} from './client/index.js'
       let addRemoteVideo = (media, sessionKey) => {
         let video = document.createElement('video')
         let container = document.getElementById('remoteVideos')
