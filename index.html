@@ -2,6 +2,10 @@
   <head>
   </head>
   <body>
+    <button id="toggleVideo">
+      Toggle
+    </button>
+
     <video id="localVideo" controls="true" muted="">
     </video>
     <div id="remoteVideos">
@@ -11,11 +15,13 @@
     <script src="client/index.js" type="module"> </script>
     <script type="module">
       import {PionSession, PionEvents} from './client/index.js'
-      let addRemoteVideo = (media, sessionKey) => {
+      const FQDN = 'pion.sh'
+
+      let addRemoteVideo = media => {
         let video = document.createElement('video')
         let container = document.getElementById('remoteVideos')
 
-        video.id = sessionKey
+        video.id = media.id
         video.controls = true
         video.srcObject = media
         video.onloadedmetadata = function (e) {
@@ -25,9 +31,9 @@
         container.appendChild(video)
       }
 
-      let removeRemoteVideo = sessionKey => {
+      let removeRemoteVideo = media => {
         try {
-          document.getElementById(sessionKey).remove()
+          document.getElementById(media.id).remove()
         } catch (e) {
           console.log('User left room that did not have a media session')
         }
@@ -45,27 +51,40 @@
             localVideo.play()
           }
 
-          let pionSession = new PionSession('signaler.pion.sh', authToken, localMediaStream)
+          let pionSession = new PionSession(FQDN, authToken)
           pionSession.eventHandler = event => {
             switch (event.type) {
-              case PionEvents.NEW_MEDIA:
-                addRemoteVideo(event.media, event.sessionKey)
+              case PionEvents.MEDIA_START:
+                addRemoteVideo(event.media)
                 break
-              case PionEvents.PEER_LEAVE_ROOM:
-                removeRemoteVideo(event.sessionKey)
+              case PionEvents.MEDIA_STOP:
+                removeRemoteVideo(event.media)
                 break
               default:
                 console.warn(event)
             }
           }
           pionSession.start()
+          pionSession.addMedia(localMediaStream)
+
+          let isAdded = true
+          let mutateLoop = () => {
+            if (isAdded) {
+              pionSession.removeMedia(localMediaStream)
+            } else {
+              pionSession.addMedia(localMediaStream)
+            }
+            isAdded = !isAdded
+          }
+
+          document.getElementById('toggleVideo').onclick = mutateLoop
         },
         function(err) {
           console.log('The following error occurred when trying to use getUserMedia: ' + err);
         })
       }
 
-      fetch('https://api.pion.sh/authenticate', {
+      fetch(`https://api.${FQDN}/authenticate`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
