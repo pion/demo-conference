@@ -39,69 +39,48 @@
         }
       }
 
-      let pionSession = authToken => {
-        navigator.getUserMedia({
-          video: true,
-          audio: true
-        },
-        function(localMediaStream) {
-          let localVideo = document.getElementById('localVideo')
-          localVideo.srcObject = localMediaStream
-          localVideo.onloadedmetadata = function(e) {
-            localVideo.play()
-          }
-
-          let pionSession = new PionSession(FQDN, authToken)
-          pionSession.eventHandler = event => {
-            switch (event.type) {
-              case PionEvents.MEDIA_START:
-                addRemoteVideo(event.media)
-                break
-              case PionEvents.MEDIA_STOP:
-                removeRemoteVideo(event.media)
-                break
-              default:
-                console.warn(event)
-            }
-          }
-          pionSession.start()
-          pionSession.addMedia(localMediaStream)
-
-          let isAdded = true
-          let mutateLoop = () => {
-            if (isAdded) {
-              pionSession.removeMedia(localMediaStream)
-            } else {
-              pionSession.addMedia(localMediaStream)
-            }
-            isAdded = !isAdded
-          }
-
-          document.getElementById('toggleVideo').onclick = mutateLoop
-        },
-        function(err) {
-          console.log('The following error occurred when trying to use getUserMedia: ' + err);
-        })
-      }
-
-      fetch(`https://api.${FQDN}/authenticate`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        },
-        body: new URLSearchParams('apiKey=seanTest&room=ABC123')
-      }).then(async response => {
-        if (response.status === 200) {
-          pionSession(await response.text())
-        } else {
-          console.error(`Authentication return ${response.status} need 200`)
+      navigator.getUserMedia({
+        video: true,
+        audio: true
+      },
+      function(localMediaStream) {
+        let localVideo = document.getElementById('localVideo')
+        localVideo.srcObject = localMediaStream
+        localVideo.onloadedmetadata = function(e) {
+          localVideo.play()
         }
-      }).catch(err => {
-        console.error(err)
+
+        let pionSession = new PionSession(FQDN, '')
+        pionSession.eventHandler = event => {
+          switch (event.type) {
+            case PionEvents.MEDIA_START:
+              addRemoteVideo(event.media)
+              break
+            case PionEvents.MEDIA_STOP:
+              removeRemoteVideo(event.media)
+              break
+            default:
+              console.warn(event)
+          }
+        }
+        pionSession.start()
+        pionSession.addMedia(localMediaStream)
+
+        let isAdded = true
+        let mutateLoop = () => {
+          if (isAdded) {
+            pionSession.removeMedia(localMediaStream)
+          } else {
+            pionSession.addMedia(localMediaStream)
+          }
+          isAdded = !isAdded
+        }
+
+        document.getElementById('toggleVideo').onclick = mutateLoop
+      },
+      function(err) {
+        console.log('The following error occurred when trying to use getUserMedia: ' + err);
       })
-
-
     </script>
   </body>
 </html>
