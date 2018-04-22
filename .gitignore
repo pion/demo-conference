@@ -1,1 +1,7 @@
-client
+gin-bin
+
+signaler/localhost.pem
+signaler/localhost.key
+
+www/localhost.pem
+www/localhost.key
