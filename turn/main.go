@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/pions/pkg/stun"
-	"github.com/pions/turn"
+	"github.com/pion/stun"
+	"github.com/pion/turn"
 )
 
 type MyTurnServer struct {

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/pions/signaler"
+	"github.com/pion/signaler"
 )
 
 type MySignalerServer struct {
