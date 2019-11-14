@@ -6,18 +6,18 @@ services:
     ports:
       - "5001:443"
     volumes:
-     - ./signaler:/usr/local/src/github.com/pion/demo-conference/signaler
+      - ./signaler:/usr/local/src/github.com/pion/demo-conference/signaler
   turn:
     build: ./turn
     environment:
-      - FQDN=localhost
+      - REALM=localhost
     ports:
-     - "3478:3478/udp"
+      - "3478:3478/udp"
     volumes:
-     - ./turn:/usr/local/src/github.com/pion/demo-conference/turn
+      - ./turn:/usr/local/src/github.com/pion/demo-conference/turn
   www:
     build: ./www
     ports:
       - "5000:443"
     volumes:
-     - ./www:/usr/local/src/github.com/pion/demo-conference/www
+      - ./www:/usr/local/src/github.com/pion/demo-conference/www
