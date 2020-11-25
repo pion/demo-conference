@@ -15,7 +15,7 @@
     <script src="https://rawgit.com/pions/pion-browser-client/master/index.js" type="module"> </script>
     <script type="module">
       import {PionSession, PionEvents} from 'https://rawgit.com/pions/pion-browser-client/master/index.js'
-      const SIGNALER_URI = 'localhost:5001'
+      const SIGNALER_URI = window.location.host.split(":")[0] + ":5001"
 
       let addRemoteVideo = media => {
         let video = document.createElement('video')
