@@ -1,3 +1,15 @@
+# This package is deprecated
+
+For a Go implementation of the PeerConnection see [pion/webrtc](https://github.com/pion/webrtc)
+
+For a SFU see [ion-sfu](https://github.com/pion/ion-sfu)
+
+For a full featured Media Server see [ion](https://github.com/pion/ion)
+
+Also see [awesome-pion](https://github.com/pion/awesome-pion) for projects created by the Pion community.
+
+----
+
 # Pion demo-conference
 demo-conference is an example of fully featured Pion deploy. A working signaler, TURN server and web app.
 
